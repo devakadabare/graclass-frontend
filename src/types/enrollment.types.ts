@@ -5,13 +5,15 @@ export interface EnrollmentDetails {
   status: EnrollmentStatus;
   requestedAt: string;
   approvedAt?: string;
+  studentId?: string;
+  studentGroupId?: string;
   course: {
     id: string;
     name: string;
     subject: string;
     level?: string;
   };
-  student: {
+  student?: {
     id: string;
     firstName: string;
     lastName: string;

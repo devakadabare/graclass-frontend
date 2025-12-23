@@ -15,6 +15,7 @@ import {
   Clock,
   UserPlus,
   Settings,
+  UserCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -30,13 +31,15 @@ const lecturerNavItems: NavItem[] = [
   { label: 'Classes', href: '/lecturer/classes', icon: <Calendar className="h-5 w-5" /> },
   { label: 'Enrollments', href: '/lecturer/enrollments', icon: <UserPlus className="h-5 w-5" /> },
   { label: 'Availability', href: '/lecturer/availability', icon: <Clock className="h-5 w-5" /> },
+  { label: 'Register Student', href: '/lecturer/register-student', icon: <UserPlus className="h-5 w-5" /> },
+  { label: 'Direct Enrollment', href: '/lecturer/direct-enrollment', icon: <UserCheck className="h-5 w-5" /> },
   { label: 'Profile', href: '/lecturer/profile', icon: <User className="h-5 w-5" /> },
 ];
 
 const studentNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/student/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
   { label: 'Browse Courses', href: '/student/courses', icon: <BookOpen className="h-5 w-5" /> },
-  { label: 'My Enrollments', href: '/student/enrollments', icon: <GraduationCap className="h-5 w-5" /> },
+  { label: 'My Enrollments', href: '/student/enrollments', icon: <UserPlus className="h-5 w-5" /> },
   { label: 'My Classes', href: '/student/classes', icon: <Calendar className="h-5 w-5" /> },
   { label: 'Study Groups', href: '/student/groups', icon: <Users className="h-5 w-5" /> },
   { label: 'Profile', href: '/student/profile', icon: <User className="h-5 w-5" /> },

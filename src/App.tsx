@@ -17,6 +17,8 @@ import LecturerCoursesPage from "@/pages/lecturer/CoursesPage";
 import LecturerClassesPage from "@/pages/lecturer/ClassesPage";
 import LecturerAvailabilityPage from "@/pages/lecturer/AvailabilityPage";
 import LecturerEnrollmentsPage from "@/pages/lecturer/EnrollmentsPage";
+import { StudentRegistrationPage } from "@/pages/lecturer/StudentRegistrationPage";
+import { DirectEnrollmentPage } from "@/pages/lecturer/DirectEnrollmentPage";
 
 // Student pages
 import StudentDashboardPage from "@/pages/student/DashboardPage";
@@ -65,6 +67,8 @@ const App = () => (
           <Route path="/lecturer/classes" element={<ProtectedRoute allowedRoles={[UserRole.LECTURER]}><LecturerClassesPage /></ProtectedRoute>} />
           <Route path="/lecturer/availability" element={<ProtectedRoute allowedRoles={[UserRole.LECTURER]}><LecturerAvailabilityPage /></ProtectedRoute>} />
           <Route path="/lecturer/enrollments" element={<ProtectedRoute allowedRoles={[UserRole.LECTURER]}><LecturerEnrollmentsPage /></ProtectedRoute>} />
+          <Route path="/lecturer/register-student" element={<ProtectedRoute allowedRoles={[UserRole.LECTURER]}><StudentRegistrationPage /></ProtectedRoute>} />
+          <Route path="/lecturer/direct-enrollment" element={<ProtectedRoute allowedRoles={[UserRole.LECTURER]}><DirectEnrollmentPage /></ProtectedRoute>} />
 
           {/* Student routes */}
           <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={[UserRole.STUDENT]}><StudentDashboardPage /></ProtectedRoute>} />

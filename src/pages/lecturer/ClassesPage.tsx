@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -11,11 +12,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ClassForm } from '@/components/classes/ClassForm';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import type { Class } from '@/types/class.types';
+import type { ClassWithDetails } from '@/types/class.types';
 
 export default function LecturerClassesPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingClass, setEditingClass] = useState<Class | null>(null);
+  const [editingClass, setEditingClass] = useState<ClassWithDetails | null>(null);
   const queryClient = useQueryClient();
 
   const { data: classes, isLoading } = useQuery({
@@ -37,20 +38,20 @@ export default function LecturerClassesPage() {
   const columns = [
     {
       header: 'Date',
-      accessor: 'date' as keyof Class,
+      accessor: 'date' as keyof ClassWithDetails,
       cell: (value: string) => format(new Date(value), 'MMM d, yyyy'),
     },
     {
       header: 'Time',
-      accessor: ((row: Class) => `${row.startTime} - ${row.endTime}`) as any,
+      accessor: ((row: ClassWithDetails) => `${row.startTime} - ${row.endTime}`) as any,
     },
     {
       header: 'Course',
-      accessor: ((row: Class) => row.course?.name || 'N/A') as any,
+      accessor: ((row: ClassWithDetails) => row.course?.name || 'N/A') as any,
     },
     {
       header: 'Student',
-      accessor: ((row: Class) => {
+      accessor: ((row: ClassWithDetails) => {
         if (row.student) {
           return `${row.student.firstName} ${row.student.lastName}`;
         }
@@ -62,7 +63,7 @@ export default function LecturerClassesPage() {
     },
     {
       header: 'Status',
-      accessor: 'status' as keyof Class,
+      accessor: 'status' as keyof ClassWithDetails,
       cell: (value: string) => (
         <Badge variant={
           value === 'SCHEDULED' ? 'default' :
@@ -75,7 +76,7 @@ export default function LecturerClassesPage() {
     },
     {
       header: 'Actions',
-      accessor: ((row: Class) => (
+      accessor: ((row: ClassWithDetails) => (
         <div className="flex gap-2">
           {row.status === 'SCHEDULED' && (
             <>

@@ -2,6 +2,11 @@ import { apiClient } from './client';
 import type { Class, CreateClassDto, UpdateClassDto, ClassWithDetails, ClassStatus } from '@/types/class.types';
 
 export const classApi = {
+  createClass: async (data: CreateClassDto): Promise<Class> => {
+    const response = await apiClient.post<Class>('/classes', data);
+    return response.data;
+  },
+
   scheduleClass: async (data: CreateClassDto): Promise<Class> => {
     const response = await apiClient.post<Class>('/classes', data);
     return response.data;

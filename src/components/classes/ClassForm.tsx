@@ -7,11 +7,14 @@ import { FormSelect } from '@/components/common/FormSelect';
 import { Button } from '@/components/ui/button';
 import { classApi } from '@/api/class.api';
 import { courseApi } from '@/api/course.api';
+import { enrollmentApi } from '@/api/enrollment.api';
 import { toast } from 'sonner';
-import type { Class, CreateClassDto } from '@/types/class.types';
+import type { Class, ClassWithDetails, CreateClassDto } from '@/types/class.types';
+import { EnrollmentStatus } from '@/types/student.types';
 
 const classSchema = z.object({
   courseId: z.string().min(1, 'Course is required'),
+  enrollmentId: z.string().min(1, 'Student/Group is required'),
   date: z.string().min(1, 'Date is required'),
   startTime: z.string().min(1, 'Start time is required'),
   endTime: z.string().min(1, 'End time is required'),
@@ -22,7 +25,7 @@ const classSchema = z.object({
 type ClassFormData = z.infer<typeof classSchema>;
 
 interface ClassFormProps {
-  classData?: Class;
+  classData?: Class | ClassWithDetails;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -31,6 +34,35 @@ export function ClassForm({ classData, onSuccess, onCancel }: ClassFormProps) {
   const { data: courses } = useQuery({
     queryKey: ['courses', 'my-courses'],
     queryFn: () => courseApi.getMyCourses(),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<ClassFormData>({
+    resolver: zodResolver(classSchema),
+    defaultValues: classData ? {
+      courseId: classData.courseId,
+      enrollmentId: '',
+      date: classData.date.split('T')[0],
+      startTime: classData.startTime,
+      endTime: classData.endTime,
+      meetingLink: classData.meetingLink || '',
+      location: classData.location || '',
+    } : {},
+  });
+
+  const courseId = watch('courseId');
+  const enrollmentId = watch('enrollmentId');
+
+  // Fetch enrollments for selected course
+  const { data: enrollments } = useQuery({
+    queryKey: ['enrollments', courseId],
+    queryFn: () => enrollmentApi.getEnrollments(EnrollmentStatus.APPROVED, courseId),
+    enabled: !!courseId,
   });
 
   const createMutation = useMutation({
@@ -55,29 +87,38 @@ export function ClassForm({ classData, onSuccess, onCancel }: ClassFormProps) {
     },
   });
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<ClassFormData>({
-    resolver: zodResolver(classSchema),
-    defaultValues: classData ? {
-      courseId: classData.courseId,
-      date: classData.date.split('T')[0],
-      startTime: classData.startTime,
-      endTime: classData.endTime,
-      meetingLink: classData.meetingLink || '',
-      location: classData.location || '',
-    } : {},
-  });
-
   const onSubmit = (data: ClassFormData) => {
+    let studentId: string | undefined;
+    let studentGroupId: string | undefined;
+
+    if (classData) {
+      // When editing, use existing studentId/studentGroupId from classData
+      studentId = classData.studentId;
+      studentGroupId = classData.studentGroupId;
+    } else {
+      // When creating, find the selected enrollment to get studentId or studentGroupId
+      const selectedEnrollment = enrollments?.find(e => e.id === data.enrollmentId);
+
+      if (!selectedEnrollment) {
+        toast.error('Please select a valid student/group');
+        return;
+      }
+
+      // Extract studentId or studentGroupId from enrollment
+      // Try direct fields first, fallback to nested object IDs
+      studentId = selectedEnrollment.studentId || selectedEnrollment.student?.id;
+      studentGroupId = selectedEnrollment.studentGroupId || selectedEnrollment.studentGroup?.id;
+    }
+
     const payload = {
-      ...data,
+      courseId: data.courseId,
+      date: data.date,
+      startTime: data.startTime,
+      endTime: data.endTime,
       meetingLink: data.meetingLink || undefined,
       location: data.location || undefined,
+      studentId: studentId || undefined,
+      studentGroupId: studentGroupId || undefined,
     };
 
     if (classData) {
@@ -86,8 +127,6 @@ export function ClassForm({ classData, onSuccess, onCancel }: ClassFormProps) {
       createMutation.mutate(payload as CreateClassDto);
     }
   };
-
-  const courseId = watch('courseId');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -98,6 +137,21 @@ export function ClassForm({ classData, onSuccess, onCancel }: ClassFormProps) {
         onValueChange={(value) => setValue('courseId', value)}
         options={courses?.map(c => ({ value: c.id, label: c.name })) || []}
         error={errors.courseId?.message}
+      />
+
+      <FormSelect
+        label="Student/Group"
+        placeholder="Select student or group"
+        value={enrollmentId}
+        onValueChange={(value) => setValue('enrollmentId', value)}
+        options={enrollments?.map(e => ({
+          value: e.id,
+          label: e.student
+            ? `${e.student.firstName} ${e.student.lastName}`
+            : e.studentGroup?.name || 'Unknown'
+        })) || []}
+        error={errors.enrollmentId?.message}
+        disabled={!courseId}
       />
 
       <FormInput

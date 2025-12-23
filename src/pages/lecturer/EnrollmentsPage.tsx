@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -22,7 +23,7 @@ export default function LecturerEnrollmentsPage() {
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: 'APPROVED' | 'REJECTED' }) =>
-      enrollmentApi.updateEnrollmentStatus(id, status),
+      enrollmentApi.updateEnrollmentStatus(id, {status}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lecturer', 'enrollments'] });
       toast.success('Enrollment status updated successfully');

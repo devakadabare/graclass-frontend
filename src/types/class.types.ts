@@ -43,6 +43,8 @@ export interface UpdateClassDto {
 export interface ClassWithDetails {
   id: string;
   courseId: string;
+  studentId?: string;
+  studentGroupId?: string;
   date: string;
   startTime: string;
   endTime: string;
