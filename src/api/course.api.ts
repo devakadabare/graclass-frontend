@@ -4,7 +4,8 @@ import type {
   CreateCourseDto,
   UpdateCourseDto,
   CourseSearchParams,
-  CourseSearchResult
+  CourseSearchResult,
+  DetailedCourseInfo
 } from '@/types/course.types';
 import type { PaginatedResponse } from '@/types/common.types';
 
@@ -54,6 +55,11 @@ export const courseApi = {
 
   getCourseById: async (courseId: string): Promise<Course> => {
     const response = await apiClient.get<Course>(`/courses/${courseId}`);
+    return response.data;
+  },
+
+  getCourseDetails: async (courseId: string): Promise<DetailedCourseInfo> => {
+    const response = await apiClient.get<DetailedCourseInfo>(`/courses/${courseId}`);
     return response.data;
   },
 

@@ -55,3 +55,33 @@ export interface CourseSearchResult {
   };
   enrollmentsCount: number;
 }
+
+export interface CourseImage {
+  id: string;
+  imageUrl: string;
+  order: number;
+}
+
+export interface DetailedCourseInfo {
+  id: string;
+  name: string;
+  description?: string;
+  subject: string;
+  level?: string;
+  duration: number;
+  hourlyRate: number;
+  flyer?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  images: CourseImage[];
+  lecturer: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email?: string;
+  };
+  enrollmentsCount: number;
+  classesCount: number;
+  isOwner: boolean;
+}

@@ -3,30 +3,27 @@ import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageLoader } from '@/components/common/LoadingSpinner';
 import { courseApi } from '@/api/course.api';
-import { studentApi } from '@/api/student.api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FormInput } from '@/components/common/FormInput';
-import { BookOpen, Clock, DollarSign } from 'lucide-react';
-import { toast } from 'sonner';
+import { CourseDetailsModal } from '@/components/courses/CourseDetailsModal';
+import { BookOpen, Clock, DollarSign, Eye } from 'lucide-react';
 
 export default function StudentCoursesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const { data: coursesData, isLoading } = useQuery({
     queryKey: ['courses', 'search', searchQuery, page],
     queryFn: () => courseApi.searchCourses({ subject: searchQuery, page, limit: 12 }),
   });
 
-  const handleEnroll = async (courseId: string) => {
-    try {
-      await studentApi.enrollInCourse({ courseId });
-      toast.success('Enrollment request submitted successfully!');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to enroll');
-    }
+  const handleViewDetails = (courseId: string) => {
+    setSelectedCourseId(courseId);
+    setShowDetailsModal(true);
   };
 
   if (isLoading) {
@@ -79,9 +76,11 @@ export default function StudentCoursesPage() {
               <CardFooter>
                 <Button
                   className="w-full"
-                  onClick={() => handleEnroll(course.id)}
+                  variant="outline"
+                  onClick={() => handleViewDetails(course.id)}
                 >
-                  Enroll Now
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Details
                 </Button>
               </CardFooter>
             </Card>
@@ -92,6 +91,15 @@ export default function StudentCoursesPage() {
           <div className="text-center py-12 text-muted-foreground">
             No courses found. Try adjusting your search.
           </div>
+        )}
+
+        {/* Course Details Modal */}
+        {selectedCourseId && (
+          <CourseDetailsModal
+            courseId={selectedCourseId}
+            open={showDetailsModal}
+            onOpenChange={setShowDetailsModal}
+          />
         )}
       </div>
     </DashboardLayout>
