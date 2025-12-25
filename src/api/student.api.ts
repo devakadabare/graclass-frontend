@@ -25,8 +25,28 @@ export const studentApi = {
     return response.data;
   },
 
-  updateProfile: async (data: UpdateStudentProfileDto): Promise<StudentProfile> => {
-    const response = await apiClient.put<StudentProfile>('/student/profile', data);
+  updateProfile: async (data: UpdateStudentProfileDto, file?: File): Promise<StudentProfile> => {
+    const formData = new FormData();
+
+    // Append required fields - always include them
+    formData.append('firstName', data.firstName || '');
+    formData.append('lastName', data.lastName || '');
+
+    // Append optional fields
+    formData.append('phone', data.phone || '');
+    formData.append('university', data.university || '');
+    formData.append('studentId', data.studentId || '');
+
+    // Append file if provided
+    if (file) {
+      formData.append('profileImage', file);
+    }
+
+    const response = await apiClient.put<StudentProfile>('/student/profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 

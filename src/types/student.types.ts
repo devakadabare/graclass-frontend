@@ -6,6 +6,7 @@ export interface StudentProfile {
   phone?: string;
   university?: string;
   studentId?: string;
+  profileImage?: string;
   email: string;
   isActive: boolean;
   isEmailVerified: boolean;

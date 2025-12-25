@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { UserRole } from '@/types/auth.types';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   LayoutDashboard,
   BookOpen,
@@ -132,9 +133,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
           {/* User info */}
           <div className="border-b p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </div>
+              <Avatar>
+                <AvatarImage src={user?.profileImage} alt={`${user?.firstName} ${user?.lastName}`} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {user?.firstName?.[0]}{user?.lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex-1 truncate">
                 <p className="font-medium truncate">{user?.firstName} {user?.lastName}</p>
                 <p className="text-sm text-muted-foreground">{getRoleLabel()}</p>

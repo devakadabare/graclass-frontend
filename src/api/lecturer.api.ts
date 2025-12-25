@@ -53,11 +53,48 @@ interface EnrollmentResponse {
 export const lecturerApi = {
   getProfile: async (): Promise<LecturerProfile> => {
     const response = await apiClient.get<LecturerProfile>('/lecturer/profile');
+    console.log('=== GET PROFILE RESPONSE ===');
+    console.log('Profile Image:', response.data.profileImage);
+    console.log('Full Profile:', response.data);
+    console.log('===========================');
     return response.data;
   },
 
-  updateProfile: async (data: UpdateLecturerProfileDto): Promise<LecturerProfile> => {
-    const response = await apiClient.put<LecturerProfile>('/lecturer/profile', data);
+  updateProfile: async (data: UpdateLecturerProfileDto, file?: File): Promise<LecturerProfile> => {
+    const formData = new FormData();
+
+    // Append required fields - always include them
+    formData.append('firstName', data.firstName || '');
+    formData.append('lastName', data.lastName || '');
+
+    // Append optional fields
+    formData.append('phone', data.phone || '');
+    formData.append('bio', data.bio || '');
+    formData.append('qualifications', data.qualifications || '');
+
+    // Append file if provided
+    if (file) {
+      console.log('=== FRONTEND: Appending file to FormData ===');
+      console.log('File name:', file.name);
+      console.log('File type:', file.type);
+      console.log('File size:', file.size);
+      formData.append('profileImage', file);
+    } else {
+      console.log('=== FRONTEND: NO FILE TO UPLOAD ===');
+    }
+
+    // Log all FormData entries
+    console.log('=== FormData contents ===');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, ':', value instanceof File ? `File: ${value.name}` : value);
+    }
+    console.log('========================');
+
+    const response = await apiClient.put<LecturerProfile>('/lecturer/profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 

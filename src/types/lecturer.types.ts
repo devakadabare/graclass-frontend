@@ -6,6 +6,7 @@ export interface LecturerProfile {
   phone?: string;
   bio?: string;
   qualifications?: string;
+  profileImage?: string;
   email: string;
   isActive: boolean;
   isEmailVerified: boolean;
