@@ -21,6 +21,7 @@ interface DataTableProps<T> {
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
+  onRowClick?: (row: T) => void;
   emptyMessage?: string;
 }
 
@@ -30,6 +31,7 @@ export function DataTable<T extends { id?: string }>({
   currentPage = 1,
   totalPages = 1,
   onPageChange,
+  onRowClick,
   emptyMessage = 'No data available',
 }: DataTableProps<T>) {
   const getCellValue = (row: T, column: Column<T>) => {
@@ -59,7 +61,11 @@ export function DataTable<T extends { id?: string }>({
               </TableRow>
             ) : (
               data.map((row, rowIndex) => (
-                <TableRow key={row.id || rowIndex}>
+                <TableRow
+                  key={row.id || rowIndex}
+                  onClick={() => onRowClick?.(row)}
+                  className={onRowClick ? 'cursor-pointer hover:bg-muted/50' : ''}
+                >
                   {columns.map((column, colIndex) => {
                     const value = getCellValue(row, column);
                     return (

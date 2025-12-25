@@ -78,12 +78,15 @@ export default function LecturerCoursesPage() {
     },
     {
       header: 'Actions',
-      accessor: ((row: Course) => (
+      accessor: 'id' as keyof Course,
+      cell: (_value: any, row: Course) => (
         <div className="flex gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => handleToggleStatus(row)}
+            title={row.isActive ? 'Deactivate course' : 'Activate course'}
+            className={row.isActive ? 'text-green-600 hover:text-green-700' : 'text-gray-400 hover:text-gray-600'}
           >
             {row.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}
           </Button>
@@ -102,7 +105,7 @@ export default function LecturerCoursesPage() {
             <Trash2 className="h-4 w-4 text-destructive" />
           </Button>
         </div>
-      )) as any,
+      ),
     },
   ];
 

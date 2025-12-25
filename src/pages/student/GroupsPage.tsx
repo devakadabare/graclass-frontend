@@ -10,12 +10,20 @@ import { Plus, Users, UserPlus } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GroupForm } from '@/components/groups/GroupForm';
+import { GroupDetailsModal } from '@/components/groups/GroupDetailsModal';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 export default function StudentGroupsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const queryClient = useQueryClient();
+
+  const handleGroupClick = (groupId: string) => {
+    setSelectedGroupId(groupId);
+    setShowDetailsModal(true);
+  };
 
   const { data: myGroups, isLoading: loadingMyGroups } = useQuery({
     queryKey: ['groups', 'my-groups'],
@@ -141,6 +149,7 @@ export default function StudentGroupsPage() {
               data={myGroups || []}
               columns={myGroupsColumns}
               emptyMessage="You haven't created any groups yet."
+              onRowClick={(row) => handleGroupClick(row.id)}
             />
           </TabsContent>
 
@@ -149,6 +158,7 @@ export default function StudentGroupsPage() {
               data={joinedGroups || []}
               columns={myGroupsColumns}
               emptyMessage="You haven't joined any groups yet."
+              onRowClick={(row) => handleGroupClick(row.id)}
             />
           </TabsContent>
 
@@ -179,6 +189,15 @@ export default function StudentGroupsPage() {
             />
           </DialogContent>
         </Dialog>
+
+        {/* Group Details Modal */}
+        {selectedGroupId && (
+          <GroupDetailsModal
+            groupId={selectedGroupId}
+            open={showDetailsModal}
+            onOpenChange={setShowDetailsModal}
+          />
+        )}
       </div>
     </DashboardLayout>
   );

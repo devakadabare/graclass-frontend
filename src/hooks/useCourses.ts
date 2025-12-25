@@ -8,11 +8,12 @@ export const useCourses = () => {
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ['courses', 'my-courses'],
-    queryFn: () => courseApi.getMyCourses(),
+    queryFn: () => courseApi.getMyCourses(true), // Include inactive courses
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: CreateCourseDto) => courseApi.createCourse(data),
+    mutationFn: (data: CreateCourseDto & { flyer?: File; images?: File[] }) =>
+      courseApi.createCourse(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       toast.success('Course created successfully');
@@ -23,8 +24,13 @@ export const useCourses = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateCourseDto }) =>
-      courseApi.updateCourse(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateCourseDto & { flyer?: File; images?: File[] };
+    }) => courseApi.updateCourse(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses'] });
       toast.success('Course updated successfully');
